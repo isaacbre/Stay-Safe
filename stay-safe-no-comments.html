@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stay Safe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        
+        .phone-frame {
+            width: 360px;
+            height: 780px;
+            background: #111827;
+            border-radius: 45px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 8px solid #1f2937;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 25px;
+            background: #1f2937;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 50;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #001540 0%, #003380 50%, #2b6eff 100%);
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            color: white;
+        }
+
+        .screen.active {
+            display: flex;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .dashed-input-group { margin-bottom: 1rem; }
+        .dashed-input-group label {
+            display: block; font-size: 0.8rem; color: #bfdbfe; margin-bottom: 0.2rem; display: flex; align-items: center; font-weight: 600;
+        }
+        .dashed-input {
+            width: 100%; background: transparent; border: none; border-bottom: 1px dashed rgba(255,255,255,0.5); color: white; padding: 6px 0; outline: none; font-size: 0.95rem;
+        }
+        .dashed-input:focus { border-bottom: 1px solid white; }
+        .dashed-input::placeholder { color: rgba(255,255,255,0.3); font-size: 0.8rem; }
+
+        .btn-light {
+            background: #e2e8f0; color: #1e3a8a; font-weight: 700; border-radius: 12px; padding: 12px; width: 100%; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.1s; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.9rem;
+        }
+        .btn-light:active { transform: scale(0.98); }
+
+        .panic-circle {
+            width: 150px; height: 150px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ff8a8a, #d32f2f);
+            border: 8px solid #f1f5f9;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4), inset 0 -5px 10px rgba(0,0,0,0.2);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto; cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .panic-circle:active { transform: scale(0.95); }
+        .panic-circle i { font-size: 4rem; color: white; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3)); }
+
+        .pill-btn {
+            border-radius: 50px; padding: 10px 10px; font-weight: 700; font-size: 0.8rem; text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); text-transform: uppercase; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.1s;
+        }
+        .pill-btn:active { transform: scale(0.97); }
+        .pill-green { background: #4ade80; color: #064e3b; border: 2px solid #22c55e; }
+        .pill-red { background: #ef4444; color: white; border: 2px solid #b91c1c; }
+        .pill-yellow { background: #facc15; color: #422006; font-weight: 700; font-size: 0.9rem; padding: 12px; }
+
+        .status-box {
+            border-radius: 10px; padding: 15px; margin-top: 20px; width: 90%; margin-left: auto; margin-right: auto; text-align: left;
+        }
+        .status-safe { background: #dcfce7; color: #166534; border-left: 5px solid #22c55e; }
+        .status-danger { background: #fee2e2; color: #7f1d1d; border-left: 5px solid #ef4444; }
+
+        .profile-avatar {
+            width: 100px; height: 100px; border-radius: 50%; border: 4px solid #bfdbfe; overflow: hidden; margin: 0 auto;
+            background-color: #fca5a5;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+        .pulsing-bg {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; background: rgba(239, 68, 68, 0.6); border-radius: 50%; z-index: -1; animation: pulse-ring 1.5s infinite;
+        }
+        ::-webkit-scrollbar { width: 0px; }
+    </style>
+</head>
+<body>
+
+    <div class="flex flex-col items-center">
+        
+        <div class="phone-frame">
+            <div class="notch"></div>
+
+            <div id="screen-login" class="screen active p-8 pt-20">
+                <div class="flex flex-col items-center mb-10">
+                    <h1 class="text-3xl font-bold mb-6">Stay Safe</h1>
+                    <div class="w-28 h-28 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 border-4 border-blue-900 shadow-lg flex items-center justify-center relative">
+                        <div class="absolute inset-0 rounded-full border-2 border-cyan-300 opacity-50 m-1"></div>
+                        <i class="fas fa-shield-alt text-5xl text-white drop-shadow-md"></i>
+                    </div>
+                </div>
+
+                <div class="w-full px-4 space-y-4">
+                    <div class="dashed-input-group">
+                        <label><i class="fas fa-user mr-2"></i> Usuário</label>
+                        <input type="text" class="dashed-input" value="">
+                    </div>
+                    <div class="dashed-input-group">
+                        <label><i class="fas fa-key mr-2"></i> Senha</label>
+                        <input type="password" class="dashed-input" value="">
+                    </div>
+                </div>
+
+                <div class="w-full px-4 mt-8 space-y-4">
+                    <button onclick="goToScreen('screen-loading', 'screen-select-profile')" class="btn-light">Login</button>
+                    <button onclick="goToScreen('screen-signup')" class="w-full border border-white text-white rounded-xl py-2 text-sm font-bold hover:bg-white/10">Criar conta</button>
+                    <p class="text-center text-xs text-blue-200 underline cursor-pointer">Esqueci minha senha</p>
+                </div>
+            </div>
+
+            <div id="screen-signup" class="screen p-8 pt-16">
+                <button onclick="goToScreen('screen-login')" class="absolute top-6 left-6 text-white text-xl"><i class="fas fa-arrow-left"></i></button>
+                
+                <div class="flex flex-col items-center mb-6">
+                    <h2 class="text-2xl font-bold">Criar Conta</h2>
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 border-2 border-blue-900 flex items-center justify-center mt-2">
+                        <i class="fas fa-shield-alt text-2xl text-white"></i>
+                    </div>
+                </div>
+
+                <div class="w-full px-2 space-y-3">
+                    <div class="dashed-input-group">
+                        <label>Usuário</label>
+                        <input type="text" class="dashed-input">
+                    </div>
+                    <div class="dashed-input-group">
+                        <label>Senha</label>
+                        <input type="password" class="dashed-input">
+                    </div>
+                    <div class="dashed-input-group">
+                        <label>Confirmar senha</label>
+                        <input type="password" class="dashed-input">
+                    </div>
+                </div>
+
+                <div class="bg-blue-900/30 p-3 rounded-lg text-xs text-blue-100 mt-4 mb-6">
+                    <p class="font-bold mb-1">Sua senha precisa conter:</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li>8 Caracteres</li>
+                        <li>Um número</li>
+                        <li>Letra Maiúscula/Minúscula</li>
+                    </ul>
+                </div>
+
+                <button onclick="goToScreen('screen-loading', 'screen-login')" class="btn-light">Confirmar</button>
+            </div>
+
+            <div id="screen-loading" class="screen items-center justify-center">
+                <div class="flex flex-col items-center">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 border-2 border-blue-900 flex items-center justify-center mb-10 animate-pulse">
+                        <i class="fas fa-shield-alt text-3xl text-white"></i>
+                    </div>
+                    <div class="w-12 h-12 border-4 border-blue-400 border-t-white rounded-full animate-spin mb-4"></div>
+                    <p class="text-blue-100 font-semibold">Carregando...</p>
+                </div>
+            </div>
+
+            <div id="screen-select-profile" class="screen p-8 pt-16 text-center">
+                <button onclick="goToScreen('screen-login')" class="absolute top-6 left-6 text-white text-xl"><i class="fas fa-arrow-left"></i></button>
+                
+                <div class="bg-white text-blue-900 font-bold rounded-full py-2 px-6 inline-block mb-10 shadow-lg text-sm uppercase">
+                    SELECIONE UM PERFIL
+                </div>
+
+                <div id="profiles-container" class="grid grid-cols-1 gap-8 justify-items-center max-h-[500px] overflow-y-auto pb-20 no-scrollbar">
+                    </div>
+            </div>
+
+            <div id="screen-create-profile" class="screen p-6 pt-16">
+                <button onclick="goToScreen('screen-select-profile')" class="absolute top-6 left-6 text-white text-xl"><i class="fas fa-arrow-left"></i></button>
+                
+                <div class="text-center mb-6">
+                    <div class="bg-white text-blue-900 font-bold rounded-full py-1 px-4 inline-block text-xs shadow-lg uppercase">
+                        NOVO PERFIL DE USUÁRIO
+                    </div>
+                </div>
+
+                <div class="space-y-3 text-sm px-2 overflow-y-auto max-h-[550px] pb-20 no-scrollbar">
+                    <div class="dashed-input-group">
+                        <label>Nome Completo</label>
+                        <input type="text" id="new-profile-name" class="dashed-input">
+                    </div>
+
+                    <div class="dashed-input-group">
+                         <label>Foto de Perfil</label>
+                        <div class="flex items-center gap-3 mt-1 cursor-pointer bg-blue-900/30 p-2 rounded-lg hover:bg-blue-900/50 transition">
+                            <div class="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center shadow-md">
+                                <i class="fas fa-camera text-white"></i>
+                            </div>
+                            <span class="text-blue-200 text-xs">Toque para enviar foto</span>
+                        </div>
+                    </div>
+
+                    <div class="dashed-input-group pt-2">
+                        <label>Número de Contato de Emergência</label>
+                        <input type="text" class="dashed-input" placeholder="(  ) ________________">
+                    </div>
+
+                     <div class="dashed-input-group">
+                        <label>Lista de Contatos (Adicional)</label>
+                        <input type="text" class="dashed-input mb-2" placeholder="(  ) ________________">
+                        <input type="text" class="dashed-input" placeholder="(  ) ________________">
+                    </div>
+
+                    <div class="pt-2">
+                        <label class="flex items-center text-sm font-bold text-blue-200 mb-2"><i class="fas fa-home mr-2"></i> Endereço Residencial</label>
+                        <div class="pl-2 space-y-1 border-l-2 border-blue-500/30">
+                            <div class="dashed-input-group mb-1"><label>Estado</label><input type="text" class="dashed-input"></div>
+                            <div class="dashed-input-group mb-1"><label>Cidade</label><input type="text" class="dashed-input"></div>
+                            <div class="dashed-input-group mb-1"><label>Bairro</label><input type="text" class="dashed-input"></div>
+                             <div class="grid grid-cols-3 gap-2">
+                                <div class="dashed-input-group col-span-2 mb-1"><label>Rua</label><input type="text" class="dashed-input"></div>
+                                <div class="dashed-input-group mb-1"><label>Número</label><input type="text" class="dashed-input"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div class="dashed-input-group pt-2">
+                        <label>Informações Médicas (Opcional)</label>
+                        <input type="text" class="dashed-input">
+                    </div>
+                
+                    <div class="pt-4 pb-8">
+                        <button onclick="addNewProfile()" class="btn-light">CRIAR PERFIL</button>
+                    </div>
+                 </div>
+            </div>
+
+            <div id="screen-home" class="screen p-6 pt-12 items-center text-center relative">
+                <button onclick="goToScreen('screen-select-profile')" class="absolute top-6 left-6 text-white text-lg"><i class="fas fa-arrow-left"></i></button>
+                
+                <h2 class="text-3xl font-bold mb-10">Stay Safe</h2>
+
+                <div class="flex-grow flex flex-col justify-center w-full">
+                    <div onclick="goToScreen('screen-options')" class="panic-circle mb-6">
+                        <i class="fas fa-user"></i>
+                        <div class="absolute -bottom-8 text-gray-400 text-[10px] bg-gray-900/80 px-2 py-1 rounded-full">HELP!</div>
+                    </div>
+
+                    <div class="mt-6 mb-6 flex justify-center">
+                        <button onclick="goToScreen('screen-options')" class="pill-btn pill-green shadow-lg text-lg px-8 hover:scale-105 transition">
+                            PEDIR AJUDA
+                        </button>
+                    </div>
+                    <p class="text-xs -mt-4 mb-6 text-blue-200">Novo Alerta</p>
+
+                    <div class="status-box status-safe shadow-lg">
+                        <div class="flex items-center font-bold mb-1">
+                            <i class="fas fa-check-circle mr-2 text-xl"></i> Tudo seguro
+                        </div>
+                        <p class="text-xs ml-7 opacity-80">• Nenhum alerta ativo</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="screen-options" class="screen p-6 pt-20 items-center relative">
+                 <button onclick="goToScreen('screen-home')" class="absolute top-6 left-6 text-white text-lg"><i class="fas fa-arrow-left"></i></button>
+
+                <div class="bg-gray-100 rounded-2xl p-4 w-full text-center mb-10 shadow-lg">
+                    <h3 class="text-blue-900 font-bold text-lg uppercase">O que você precisa?</h3>
+                </div>
+
+                <div class="w-full flex flex-col gap-6 px-2 mb-auto justify-center h-full pb-20">
+                    <div class="flex items-center justify-between gap-4 group cursor-pointer" onclick="triggerAlertState('190')">
+                        <div class="bg-white text-blue-900 font-bold py-6 px-6 rounded-[2rem] shadow-xl text-lg flex-1 text-left hover:bg-gray-50 flex flex-col justify-center h-32 transition transform group-hover:scale-105">
+                            <span class="leading-tight">Ligar para a<br>emergência</span>
+                            <span class="text-4xl font-black mt-1">190</span>
+                        </div>
+                        <div class="w-28 h-28 rounded-full border-[6px] border-cyan-400 flex items-center justify-center shadow-lg bg-blue-900/30 transition transform group-hover:rotate-12">
+                            <i class="fas fa-phone-alt text-cyan-400 text-5xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-4 group cursor-pointer" onclick="triggerAlertState('contacts')">
+                        <div class="bg-amber-400 text-amber-900 font-bold py-6 px-6 rounded-[2rem] shadow-xl text-lg flex-1 text-left hover:bg-amber-300 flex flex-col justify-center h-32 transition transform group-hover:scale-105">
+                            <span class="leading-tight">Enviar alerta<br>para contatos de<br>emergência</span>
+                        </div>
+                        <div class="w-28 h-28 rounded-full border-[6px] border-blue-500 flex items-center justify-center shadow-lg bg-blue-900/30 relative transition transform group-hover:rotate-12">
+                            <i class="fas fa-comment-dots text-blue-500 text-5xl"></i>
+                             <i class="fas fa-check-circle text-blue-200 absolute top-2 right-2 text-2xl bg-blue-900 rounded-full shadow-sm"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-8 w-full text-center">
+                    <button onclick="goToScreen('screen-home')" class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mx-auto shadow-lg border-4 border-white hover:bg-red-700 transition hover:scale-110">
+                        <i class="fas fa-times text-4xl text-white"></i>
+                    </button>
+                    <p class="text-sm font-bold mt-3">Cancelar pedido de alerta</p>
+                </div>
+            </div>
+
+            <div id="screen-confirm-alert" class="screen p-6 pt-12 items-center text-center relative">
+                <h2 class="text-3xl font-bold mb-10">Stay Safe</h2>
+
+                <div onclick="escalateToFullAlert()" class="panic-circle mb-8">
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <div class="flex justify-center gap-3 mt-2 w-full px-1 mb-2">
+                    <button onclick="goToScreen('screen-options')" class="pill-btn pill-green flex-1 hover:scale-105 transition">
+                        PEDIR AJUDA
+                    </button>
+                    <button onclick="escalateToFullAlert()" id="dynamic-alert-pill" class="pill-btn pill-red flex-1 leading-tight hover:scale-105 transition">
+                        ALERTA...
+                    </button>
+                </div>
+
+                <p class="text-xs text-blue-200 mt-1 mb-8">Novo Alerta</p>
+
+                <button onclick="goToScreen('screen-home')" class="pill-btn pill-yellow w-full shadow-lg mb-8 hover:bg-yellow-300">
+                    CANCELAR ALERTA
+                </button>
+
+                <div class="status-box status-danger shadow-lg cursor-pointer hover:bg-red-100/20 transition" onclick="escalateToFullAlert()">
+                    <div class="flex items-center font-bold mb-2 text-lg text-red-800">
+                        <i class="fas fa-exclamation-circle mr-3 text-2xl"></i> Em alerta
+                    </div>
+                    <p id="dynamic-alert-msg" class="text-sm ml-9 opacity-90 text-left text-red-900">
+                        </p>
+                </div>
+            </div>
+
+            <div id="screen-full-panic" class="screen p-6 pt-12 items-center text-center relative">
+                
+                <h2 class="text-3xl font-bold mb-10">Stay Safe</h2>
+
+                <div class="relative mb-10">
+                    <div class="pulsing-bg"></div>
+                    <div class="panic-circle">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+                         <i class="fas fa-exclamation-triangle text-yellow-400 text-5xl drop-shadow-lg stroke-black stroke-[2px]"></i>
+                    </div>
+                </div>
+
+                <div class="flex justify-center gap-3 mt-4 w-full px-1 mb-2">
+                    <button onclick="goToScreen('screen-options')" class="pill-btn pill-green flex-1 hover:scale-105 transition">
+                        PEDIR AJUDA
+                    </button>
+                    <button class="pill-btn pill-red flex-1 leading-tight cursor-default">
+                        TODOS ALERTAS ATIVOS
+                    </button>
+                </div>
+                <p class="text-xs text-blue-200 mt-1 mb-8">Novo Alerta</p>
+
+                <button onclick="goToScreen('screen-home')" class="pill-btn pill-yellow w-full shadow-lg mb-8 hover:bg-yellow-300">
+                    CANCELAR ALERTA
+                </button>
+
+                <div class="status-box status-danger shadow-lg">
+                    <div class="flex items-center font-bold mb-2 text-lg text-red-800">
+                        <i class="fas fa-exclamation-circle mr-3 text-2xl"></i> Em alerta
+                    </div>
+                    <ul class="text-xs ml-9 opacity-90 list-disc text-left font-semibold text-red-900 space-y-1">
+                        <li>Emergência acionada</li>
+                        <li>Mensagem enviada aos contatos</li>
+                        <li>Localização atual compartilhada com os contatos</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div> 
+        
+       
+    </div>
+
+    <script>
+        let profiles = [
+            {
+                name: 'Lourdes',
+                src: './lourdes.png', 
+                color: 'bg-blue-500'
+            }
+        ];
+
+        function goToScreen(targetId, nextScreenId = null) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            
+            const target = document.getElementById(targetId);
+            if(target) {
+                target.classList.add('active');
+                target.scrollTop = 0;
+            }
+
+            if (targetId === 'screen-select-profile') {
+                renderProfiles();
+            }
+
+            if (targetId === 'screen-loading' && nextScreenId) {
+                setTimeout(() => {
+                    goToScreen(nextScreenId);
+                }, 1500);
+            }
+        }
+
+        function renderProfiles() {
+            const container = document.getElementById('profiles-container');
+            container.innerHTML = '';
+            
+            profiles.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'cursor-pointer group flex flex-col items-center mb-6';
+                div.onclick = () => goToScreen('screen-home');
+                
+                div.innerHTML = `
+                    <div class="profile-avatar shadow-lg group-hover:scale-105 transition ring-4 ring-blue-300/50">
+                        <img src="${p.src}" alt="${p.name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3048/3048122.png'">
+                    </div>
+                    <p class="mt-3 font-bold ${p.color} text-white px-6 py-1.5 rounded-full text-lg inline-block shadow-md tracking-wide">${p.name}</p>
+                `;
+                container.appendChild(div);
+            });
+
+            const addBtn = document.createElement('div');
+            addBtn.className = 'cursor-pointer group mt-6';
+            addBtn.onclick = () => goToScreen('screen-create-profile');
+            addBtn.innerHTML = `
+                <div class="w-[100px] h-[100px] rounded-full border-[4px] border-blue-200 flex items-center justify-center mx-auto bg-blue-900/20 group-hover:bg-blue-900/40 transition shadow-lg">
+                    <i class="fas fa-plus text-5xl text-blue-200"></i>
+                </div>
+                <p class="mt-3 font-bold bg-blue-600 text-white px-4 py-1 rounded-full text-xs inline-block uppercase tracking-wider shadow-md">Adicionar novo usuário</p>
+            `;
+            container.appendChild(addBtn);
+        }
+
+        function addNewProfile() {
+            const nameInput = document.getElementById('new-profile-name');
+            const name = nameInput.value.trim();
+
+            if (name) {
+                profiles.push({
+                    name: name,
+                    src: 'https://cdn-icons-png.flaticon.com/512/1077/1077114.png', 
+                    color: 'bg-indigo-500'
+                });
+                
+                nameInput.value = '';
+                document.querySelectorAll('#screen-create-profile input').forEach(i => i.value = '');
+                
+                goToScreen('screen-select-profile');
+            } else {
+                alert('Por favor, digite pelo menos o Nome Completo.');
+            }
+        }
+
+        function triggerAlertState(type) {
+            const pill = document.getElementById('dynamic-alert-pill');
+            const msg = document.getElementById('dynamic-alert-msg');
+            
+            if (type === '190') {
+                pill.textContent = "ALERTA PARA EMERGÊNCIA";
+                msg.innerHTML = "• A emergência foi acionada";
+            } else if (type === 'contacts') {
+                pill.textContent = "ALERTA AOS CONTATOS";
+                msg.innerHTML = "• Mensagem enviada aos contatos de emergência";
+            }
+            goToScreen('screen-confirm-alert');
+        }
+
+        function escalateToFullAlert() {
+            goToScreen('screen-full-panic');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProfiles();
+        });
+    </script>
+</body>
+</html>
